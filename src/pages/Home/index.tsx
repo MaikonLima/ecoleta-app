@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    backgroundColor: '#34CB79',
+    backgroundColor: '#e43f5a',
     height: 60,
     flexDirection: 'row',
     borderRadius: 10,
