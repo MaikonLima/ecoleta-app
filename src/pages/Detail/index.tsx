@@ -1,17 +1,53 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, StyleSheet, TouchableOpacity, Image, Text, SafeAreaView } from 'react-native';
 import Constants from 'expo-constants';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Feather as Icon, FontAwesome } from '@expo/vector-icons';
-
 import { RectButton } from 'react-native-gesture-handler';
+import api from '../../services/api';
+
+
+interface Params {
+  point_id: number;
+}
+
+interface Data {
+  point: {
+    image: string;
+    name: string;
+    email: string; 
+    whatsapp: string;
+    city: string;
+    uf: string;
+  }
+  items: {
+    title: string;
+  }[];
+}
 
 const Detail = () => {
+  const [data, setData] = useState<Data>({} as Data);
+
   const navigation = useNavigation();
+  const route = useRoute();
+
+  const routeParams = route.params as Params ;
+  
+  useEffect(() => {
+  api.get(`points/${routeParams.point_id}`).then(response => {
+       setData(response.data);
+  })
+  }, []);  
+
 
   function handlerNavigateBack() {
     navigation.goBack();
   }
+
+  if(!data.point){
+    return null;
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -19,14 +55,16 @@ const Detail = () => {
           <Icon name="arrow-left" size={20} color="#e43f5a" />
         </TouchableOpacity>
 
-        <Image style={styles.pointImage} source={{ uri: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80' }} />
+        <Image style={styles.pointImage} source={{ uri: data.point.image }} />
 
-        <Text style={styles.pointName}>Mercadao do João</Text>
-        <Text style={styles.pointItems}>Arroz, Feijão, Óleo de cozinha</Text>
+        <Text style={styles.pointName}>data.point.name</Text>
+        <Text style={styles.pointItems}>
+          {data.items.map(item => item.title).join(', ')}
+        </Text>
 
         <View style={styles.address}>
           <Text style={styles.addressTitle}>Endereço</Text>
-          <Text style={styles.addressContent}>Manaus, AM</Text>
+          <Text style={styles.addressContent}>{data.point.city}, {data.point.uf}</Text>
         </View>
       </View>
       <View style={styles.footer}>

@@ -21,10 +21,6 @@ interface Point {
   image: string;
   latitude: number;
   longitude: number;
-  items: [
-    title: string;
-
-  ]
 }
 
 const Points = () => {
@@ -83,8 +79,8 @@ const Points = () => {
     navigation.goBack();
   }
 
-  function hendlerNavigateToDetail() {
-    navigation.navigate('Detail');
+  function hendlerNavigateToDetail(id: number) {
+    navigation.navigate('Detail', { point_id: id });
   }
 
   function handleSelectItem(id: number) {
@@ -104,7 +100,7 @@ const Points = () => {
       <View style={styles.container}>
 
         <TouchableOpacity onPress={handlerNavigateBack}>
-          <Icon name="arrow-left" size={20} color="#34cb79" />
+          <Icon name="arrow-left" size={20} color="#e43f5a" />
         </TouchableOpacity>
 
         <Text style={styles.title}>Bem Vindo.</Text>
@@ -120,19 +116,22 @@ const Points = () => {
               latitudeDelta: 0.014,
               longitudeDelta: 0.014,
             }}>
-            <Marker
+            {points.map(point => (
+              <Marker
+              key={String(point.id)}
               style={styles.mapMarker}
-              onPress={handlerNavigateBack}
+              onPress={() => hendlerNavigateToDetail (point.id)}
               coordinate={{
-                latitude: -3.0950499,
-                longitude: -60.0617355,
+                latitude: point.latitude,
+                longitude: point.longitude,
               }}
             >
               <View style={styles.mapMarkerContainer}>
-                <Image style={styles.mapMarkerImage} source={{ uri: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80' }} />
-                <Text style={styles.mapMarkerTitle}>Mercado</Text>
+                <Image style={styles.mapMarkerImage} source={{ uri: point.image }} />
+                <Text style={styles.mapMarkerTitle}>{point.name}</Text>
               </View>
             </Marker>
+            ))}
           </MapView>
           ) }
         </View>
@@ -205,7 +204,7 @@ const styles = StyleSheet.create({
   mapMarkerContainer: {
     width: 90,
     height: 70,
-    backgroundColor: '#34CB79',
+    backgroundColor: '#e43f5a',
     flexDirection: 'column',
     borderRadius: 8,
     overflow: 'hidden',
@@ -250,7 +249,7 @@ const styles = StyleSheet.create({
   },
 
   selectedItem: {
-    borderColor: '#34CB79',
+    borderColor: '#e43f5a',
     borderWidth: 2,
   },
 
